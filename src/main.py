@@ -88,7 +88,8 @@ def open_melexis_plan(systray):
 
 
 menu_options = (("Melexis", None, open_melexis_plan), ("Gulaschkanone", None, open_guka_plan))
-systray = SysTrayIcon("stonks.ico", "Speisepläne", menu_options)
+systray = SysTrayIcon("Stonks.ico", "Speisepläne", menu_options)
+
 
 systray.start()
 
