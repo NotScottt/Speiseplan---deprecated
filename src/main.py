@@ -3,10 +3,12 @@ from bs4 import BeautifulSoup
 from tkinter.ttk import *
 from tkinter import *
 import webbrowser
+import tempfile
 import requests
+from infi.systray import SysTrayIcon
 from datetime import datetime, timedelta
 import os
-import tempfile
+
 
 URL = "https://www.essecke-erfurt.de/mittagsverpflegung/essecke-melexis/"
 HTML_DOC = requests.get(URL)
@@ -37,7 +39,7 @@ def open_main_root():
     main_root.mainloop()
 
 
-def open_guka_plan():
+def open_guka_plan(systray):
     today = datetime.now()
     year = today.year
     kw = today.isocalendar().week
@@ -69,7 +71,7 @@ def get_current_speiseplan(html):
         messagebox.showerror("Fehler", "Der aktuelle Speiseplan wurde nicht gefunden. Bitte versuchen Sie es später erneut!")
 
 
-def open_melexis_plan():
+def open_melexis_plan(systray):
     url = get_current_speiseplan(HTML_DOC)
     response = requests.get(url)
 
@@ -83,4 +85,11 @@ def open_melexis_plan():
     os.system(tmp_pdf_file_path)
     temp_dict.cleanup()
 
-open_main_root()
+
+
+menu_options = (("Melexis", None, open_melexis_plan), ("Gulaschkanone", None, open_guka_plan))
+systray = SysTrayIcon("stonks.ico", "Speisepläne", menu_options)
+
+systray.start()
+
+# open_main_root()
