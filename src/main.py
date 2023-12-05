@@ -84,11 +84,9 @@ def open_melexis_plan(systray):
 
     os.system(tmp_pdf_file_path)
     temp_dict.cleanup()
-
-
-
+    
 menu_options = (("Melexis", None, open_melexis_plan), ("Gulaschkanone", None, open_guka_plan))
-systray = SysTrayIcon("Stonks.ico", "Speisepläne", menu_options)
+systray = SysTrayIcon("Besteck.ico", "Speisepläne", menu_options)
 
 
 systray.start()
