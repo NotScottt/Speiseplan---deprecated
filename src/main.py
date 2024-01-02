@@ -49,24 +49,20 @@ def open_guka_plan(systray):
     webbrowser.open(guka_url, new=0, autoraise=True)
 
 
-
 def get_current_speiseplan(html):
     try:
         soup = BeautifulSoup(html.content, "lxml")
-        
-        div = soup.find("div", class_= "rightDownload")
-        date = div.select_one("strong").text
 
         if len(str(week_num)) == 1:
-            current_speiseplan_date = f"Speiseplan 0{week_num}.23.pdf"
+            current_speiseplan_date = f"Speiseplan 0{week_num}.{str(year)[2:]}.pdf"
         else:
-            current_speiseplan_date = f"Speiseplan {week_num}.23.pdf"
-        
+            current_speiseplan_date = f"Speiseplan {week_num}.{str(year)[2:]}.pdf"
+
+      
         for current_speiseplan_list in soup.find_all("a", href=True,string=current_speiseplan_date):
             ultimate_link_final = current_speiseplan_list["href"]
-        
-        url = ultimate_link_final
-        return url
+
+        return ultimate_link_final
     except (UnboundLocalError, FileNotFoundError):
         messagebox.showerror("Fehler", "Der aktuelle Speiseplan wurde nicht gefunden. Bitte versuchen Sie es später erneut!")
 
@@ -88,7 +84,4 @@ def open_melexis_plan(systray):
 menu_options = (("Melexis", None, open_melexis_plan), ("Gulaschkanone", None, open_guka_plan))
 systray = SysTrayIcon("Besteck.ico", "Speisepläne", menu_options)
 
-
 systray.start()
-
-# open_main_root()
