@@ -45,7 +45,15 @@ def open_guka_plan(systray):
     kw = today.isocalendar().week
     needed_month = today - timedelta(days = today.weekday())
 
-    guka_url = f"https://gulaschkanone-erfurt.de/wp-content/uploads/{year}/{needed_month.month}/Sued-Ost-KW-{kw}.pdf"
+    if len(str(needed_month.month)) == 1:
+        month = f"0{needed_month.month}"
+    else:
+        month = needed_month.month
+    
+    if len(str(kw)) == 1:
+        kw = f"0{kw}"
+
+    guka_url = f"https://gulaschkanone-erfurt.de/wp-content/uploads/{year}/{month}/Sued-Ost-KW-{kw}.pdf"
     webbrowser.open(guka_url, new=0, autoraise=True)
 
 
