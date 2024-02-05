@@ -7,6 +7,7 @@ import tempfile
 import requests
 from infi.systray import SysTrayIcon
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import os
 
 
@@ -38,23 +39,50 @@ def open_main_root():
 
     main_root.mainloop()
 
+today = datetime.now()
+year = today.year
+kw = today.isocalendar().week
+needed_month = today - timedelta(days = today.weekday())
+
+if len(str(needed_month.month)) == 1:
+    month = f"0{needed_month.month}"
+else:
+    month = needed_month.month
+
+if len(str(kw)) == 1:
+    kw = f"0{kw}"
+
+
+date_minus_one = datetime.today() - relativedelta(month=1)
+if len(str(date_minus_one.month)) == 1:
+    month_minus_one = f"0{date_minus_one.month}"
+else:
+    month_minus_one = date_minus_one.month
+
 
 def open_guka_plan(systray):
-    today = datetime.now()
-    year = today.year
-    kw = today.isocalendar().week
-    needed_month = today - timedelta(days = today.weekday())
-
-    if len(str(needed_month.month)) == 1:
-        month = f"0{needed_month.month}"
-    else:
-        month = needed_month.month
-    
-    if len(str(kw)) == 1:
-        kw = f"0{kw}"
-
     guka_url = f"https://gulaschkanone-erfurt.de/wp-content/uploads/{year}/{month}/Sued-Ost-KW-{kw}.pdf"
     webbrowser.open(guka_url, new=0, autoraise=True)
+
+
+def get_sportklinik(systray):
+    # https://sportklinik-erfurt.de/wp-content/uploads/2024/01/Kw06.pdf
+
+    sportklinik_url = f"https://sportklinik-erfurt.de/wp-content/uploads/{year}/{month}/Kw{kw}.pdf"
+
+    response = requests.get(sportklinik_url)
+    soup = BeautifulSoup(response.content, "html.parser")
+    title = soup.title.string
+
+    
+    
+    if "Seite wurde nicht gefunden" in title:
+        final_url = f"https://sportklinik-erfurt.de/wp-content/uploads/{year}/{month_minus_one}/Kw{kw}.pdf"
+    else:
+        final_url = sportklinik_url
+
+    # sportklinik_url = f"https://gulaschkanone-erfurt.de/wp-content/uploads/{year}/{month}/Sued-Ost-KW-{kw}.pdf"
+    webbrowser.open(final_url, new=0, autoraise=True)
 
 
 def get_current_speiseplan(html):
@@ -89,7 +117,7 @@ def open_melexis_plan(systray):
     os.system(tmp_pdf_file_path)
     temp_dict.cleanup()
     
-menu_options = (("Melexis", None, open_melexis_plan), ("Gulaschkanone", None, open_guka_plan))
+menu_options = (("Melexis", None, open_melexis_plan), ("Gulaschkanone", None, open_guka_plan), ("Sportklinik", None, get_sportklinik))
 systray = SysTrayIcon("Besteck.ico", "Speisepläne", menu_options)
 
 systray.start()
