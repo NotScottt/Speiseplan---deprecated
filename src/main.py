@@ -1,15 +1,15 @@
 from tkinter import messagebox
 from bs4 import BeautifulSoup
-from tkinter.ttk import *
-from tkinter import *
+import schedule, time
 import webbrowser
 import tempfile
 import requests
 from infi.systray import SysTrayIcon
+import configparser
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-import os
-
+from pathlib import Path
+import os, os.path
 
 URL = "https://www.essecke-erfurt.de/mittagsverpflegung/essecke-melexis/"
 HTML_DOC = requests.get(URL)
@@ -18,26 +18,6 @@ current_date = datetime.now()
 year, week_num, day_of_week = current_date.isocalendar()
 username = os.getlogin()
 
-
-def open_main_root():
-    main_root = Tk()
-    main_root.geometry("250x50")
-    main_root.resizable(False, False)
-    main_root.title("Speiseplan")
-
-
-    button_width = 17
-
-    melexis_btn = Button(main_root, text="Melexis", command=open_melexis_plan)
-    melexis_btn.configure(width=button_width)
-    melexis_btn.place(relx=0.27, rely=0.5, anchor="center")
-
-
-    guka_btn = Button(main_root, text="Gulaschkanone", command=open_guka_plan)
-    guka_btn.configure(width=button_width)
-    guka_btn.place(relx=0.73, rely=0.5, anchor="center")
-
-    main_root.mainloop()
 
 today = datetime.now()
 year = today.year
@@ -124,5 +104,22 @@ def open_melexis_plan(systray):
 
 menu_options = (("Melexis", None, open_melexis_plan), ("Gulaschkanone", None, open_guka_plan), ("Sportklinik", None, get_sportklinik))
 systray = SysTrayIcon("Besteck.ico", "Speisepläne", menu_options)
+
+try:
+    config = configparser.ConfigParser()
+    config.read("settings.ini")
+    
+    save_mlx_plan = config.getboolean('melexis', 'save_plan_mx')
+    save_mlx_src = Path(f"{config.get('melexis', 'plan_file')}\\Speiseplan KW{kw}.pdf")
+
+    if save_mlx_plan:
+        url = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+        response = requests.get(url) 
+        if not os.path.isfile(save_mlx_src):
+            with open(save_mlx_src, "wb") as pdf:
+                pdf.write(response.content)
+
+except configparser.NoSectionError or configparser.NoOptionError:
+    pass
 
 systray.start()
