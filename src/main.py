@@ -108,7 +108,7 @@ def open_melexis_plan(systray):
     response = requests.get(url)
 
     if response.status_code == 404:
-        messagebox.showerror("Fehler", "Der Aktuelle Speiseplan konnte nicht gefunden werden. Bitter versuchen Sie es später erneut!")
+        messagebox.showerror("Fehler", f"Der Aktuelle Speiseplan konnte nicht gefunden werden.\n\nGrund:\nStatuscode {response.status_code}, {response.reason}")
 
     else:
         temp_dict = tempfile.TemporaryDirectory()
