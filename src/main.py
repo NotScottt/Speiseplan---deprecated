@@ -107,10 +107,7 @@ def open_melexis_plan(systray):
     url = get_current_speiseplan(HTML_DOC)
     response = requests.get(url)
 
-    if response.status_code == 404:
-        messagebox.showerror("Fehler", f"Der Aktuelle Speiseplan konnte nicht gefunden werden.\n\nGrund:\nStatuscode {response.status_code}, {response.reason}")
-
-    else:
+    if response.status_code == 200:
         temp_dict = tempfile.TemporaryDirectory()
         base_path = temp_dict.name
         tmp_pdf_file_path = base_path + "\pdf_tmp.pdf" 
@@ -120,6 +117,9 @@ def open_melexis_plan(systray):
 
         os.system(tmp_pdf_file_path)
         temp_dict.cleanup()
+
+    else:
+        messagebox.showerror("Fehler", f"Der Aktuelle Speiseplan konnte nicht gefunden werden.\n\nGrund:\nStatuscode {response.status_code}, {response.reason}")
     
 
 menu_options = (("Melexis", None, open_melexis_plan), ("Gulaschkanone", None, open_guka_plan), ("Sportklinik", None, get_sportklinik))
