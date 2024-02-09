@@ -107,16 +107,21 @@ def open_melexis_plan(systray):
     url = get_current_speiseplan(HTML_DOC)
     response = requests.get(url)
 
-    temp_dict = tempfile.TemporaryDirectory()
-    base_path = temp_dict.name
-    tmp_pdf_file_path = base_path + "\pdf_tmp.pdf" 
+    if response.status_code == 404:
+        messagebox.showerror("Fehler", "Der Aktuelle Speiseplan konnte nicht gefunden werden. Bitter versuchen Sie es später erneut!")
 
-    with open(tmp_pdf_file_path, "wb") as tmpPDF:
-        tmpPDF.write(response.content)
+    else:
+        temp_dict = tempfile.TemporaryDirectory()
+        base_path = temp_dict.name
+        tmp_pdf_file_path = base_path + "\pdf_tmp.pdf" 
 
-    os.system(tmp_pdf_file_path)
-    temp_dict.cleanup()
+        with open(tmp_pdf_file_path, "wb") as tmpPDF:
+            tmpPDF.write(response.content)
+
+        os.system(tmp_pdf_file_path)
+        temp_dict.cleanup()
     
+
 menu_options = (("Melexis", None, open_melexis_plan), ("Gulaschkanone", None, open_guka_plan), ("Sportklinik", None, get_sportklinik))
 systray = SysTrayIcon("Besteck.ico", "Speisepläne", menu_options)
 
