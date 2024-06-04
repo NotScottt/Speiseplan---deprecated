@@ -1,3 +1,7 @@
+# ⚠️ This project is deprecated ⚠️
+
+
+
 # Speiseplanreader
 Ein simples Projekt, um auf Knopfdruck den akutellsten Speiseplan von der Essecke zu bekommen.
 
